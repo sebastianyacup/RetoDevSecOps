@@ -54,6 +54,7 @@ jobs:
 
       - name: Copy JSON to Public Directory
         run: |
+          mkdir -p docs 
           cp resultados_analisis_snyk_${{ github.run_id }}.json docs/
 
 
