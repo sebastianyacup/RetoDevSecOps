@@ -1,4 +1,4 @@
-name: Análisis de Dependencias
+name: CI/CD
 
 on:
   push:
@@ -6,29 +6,36 @@ on:
       - main
 
 jobs:
-  analisis-de-dependencias:
+  build:
+    name: Build
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repositorio
+      - name: Checkout Repository
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
 
-      - name: Configurar Python
+      - name: Set up Python
         uses: actions/setup-python@v2
         with:
           python-version: 3.x
 
-      - name: Instalar Dependencias
-        run: pip install requests
+      - name: Install Dependencies
+        run: |
+          pip install -r requirements.txt
 
-      - name: Ejecutar Análisis de Dependencias
-        run: python snyk_service.py
-        env:
-          SNYK_API_KEY: ${{ secrets.SNYK_API_KEY }}
-          SNYK_INTEGRATION_ID: ${{ secrets.SNYK_INTEGRATION_ID }}
+      - name: Check Project Files
+        run: |
+          ls -R
 
-      - name: Almacenar Resultados
+      - name: Synk Analysis
+        run: |
+          synk analyze --json > resultados_analisis_synk_${{ github.run_id }}.json
+
+      - name: Upload Synk Results
         uses: actions/upload-artifact@v2
         with:
-          name: resultados-analisis
-          path: resultados_analisis.json
+          name: resultados-analisis-synk
+          path: resultados_analisis_synk_${{ github.run_id }}.json
+
 
