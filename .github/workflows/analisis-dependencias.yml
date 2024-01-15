@@ -46,12 +46,6 @@ jobs:
       - name: Show Snyk Analysis Results
         run: cat resultados_analisis_snyk_${{ github.run_id }}.json
 
-      - name: Upload Snyk Results
-        uses: actions/upload-artifact@v2
-        with:
-          name: resultados-analisis-snyk
-          path: resultados_analisis_snyk_${{ github.run_id }}.json
-
       - name: Create Release
         id: create_release
         uses: softprops/action-gh-release@v1
@@ -62,9 +56,15 @@ jobs:
 
       - name: Get Release URL
         id: get_release_url
-        run: echo "::set-output name=url::$(echo ${{ steps.create_release.outputs.release_url }})"
-      
+        run: echo "::set-output name=url::${{ steps.create_release.outputs.upload_url }}"
+
       - name: Display Release URL
-        run: echo "Release URL: ${{ steps.get_release_url.outputs.url }}"
+        run: echo "${{ steps.get_release_url.outputs.url }}"
+
+
+
+
+
+
 
 
