@@ -1,0 +1,34 @@
+name: Análisis de Dependencias
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  analisis-de-dependencias:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repositorio
+        uses: actions/checkout@v2
+
+      - name: Configurar Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.x
+
+      - name: Instalar Dependencias
+        run: pip install requests
+
+      - name: Ejecutar Análisis de Dependencias
+        run: python snyk_service.py
+        env:
+          SNYK_API_KEY: ${{ secrets.SNYK_API_KEY }}
+          SNYK_INTEGRATION_ID: ${{ secrets.SNYK_INTEGRATION_ID }}
+
+      - name: Almacenar Resultados
+        uses: actions/upload-artifact@v2
+        with:
+          name: resultados-analisis
+          path: resultados_analisis.json
+

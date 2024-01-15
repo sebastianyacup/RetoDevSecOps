@@ -1,0 +1,29 @@
+version: '3'
+
+services:
+  upbasededatos:
+    container_name: upbasededatos
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin123
+      POSTGRES_DB: Local-Devsecops
+    ports:
+      - "5432:5432"
+    networks:
+      - mynetwork
+
+  runningapp:
+    container_name: runningapp
+    build: .
+    command: ["python", "run.py"]
+    ports:
+      - "5000:5000"
+    depends_on:
+      - upbasededatos
+    networks:
+      - mynetwork
+
+networks:
+  mynetwork:
+    driver: bridge
