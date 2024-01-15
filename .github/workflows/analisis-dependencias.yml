@@ -53,6 +53,7 @@ jobs:
           files: |
             resultados_analisis_snyk_${{ github.run_id }}.json
           tag_name: v1.0.0  
+          label: "Snyk Analysis JSON"
           token: ${{ secrets.TOKEN_GIT }}
 
       - name: Get Release URL
