@@ -1,10 +1,14 @@
-import requests
-from flask import Flask, jsonify, Blueprint
+from flask import Flask, request, Blueprint, jsonify
 from app.adapters.flask_repository import FlaskVulnerabilityRepository
 from app.core.use_cases.obtener_vulnerabilidades import ObtenerVulnerabilidades
-from scripts.obtener_reportes_pipeline import obtener_reportes_desde_pipelines
+from scripts.download_and_update import download_and_update
+from scripts.extract_latest_json import extract_latest_json
 
 bp = Blueprint('vulnerabilities', __name__)
+
+REPO_NAME = 'sebastianyacup/RetoDevSecOps'
+WORKFLOW_NAME = 'analisis-dependencias.yml'
+GITHUB_ACCESS_TOKEN = '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'
 
 
 @bp.route('/vulnerabilities', methods=['GET'])
@@ -12,28 +16,37 @@ def get_vulnerabilities():
     repository = FlaskVulnerabilityRepository()
     vulnerabilities = []
 
-    repo = 'sebastianyacup/RetoDevSecOps'
-    artifact_url = f'https://api.github.com/repos/{repo}/actions/artifacts'
-    headers = {'Authorization': 'Bearer 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'}
+    extract_path = download_and_update(REPO_NAME, WORKFLOW_NAME, GITHUB_ACCESS_TOKEN)
 
-    response = requests.get(artifact_url, headers=headers)
-    artifacts = response.json()['artifacts']
+    if extract_path:
+        reportes = extract_latest_json(extract_path)
 
-    if artifacts:
-        artifact_id = artifacts[0]['id']
-        download_url = f'https://api.github.com/repos/{repo}/actions/artifacts/{artifact_id}/zip'
-        response = requests.get(download_url, headers=headers)
-
-        report_path = f'/path/to/report/resultados-analisis-synk.json'
-        with open(report_path, 'wb') as file:
-            file.write(response.content)
-
-        reportes = obtener_reportes_desde_pipelines(report_path)
-        obtener_vulnerabilidades = ObtenerVulnerabilidades(repository)
-        vulnerabilities.extend(obtener_vulnerabilidades.execute(reportes))
+        if reportes:
+            obtener_vulnerabilidades = ObtenerVulnerabilidades(repository)
+            vulnerabilities.extend(obtener_vulnerabilidades.execute(reportes))
 
     return jsonify([vars(v) for v in vulnerabilities])
 
 
-def configure_routes(app: Flask, obtener_reportes_desde_pipelines):
-    app.register_blueprint(bp)
+@bp.route('/webhook-endpoint', methods=['POST'])
+def webhook_handler():
+    payload = request.json
+    ref = payload.get('ref')
+    head_commit = payload.get('head_commit')
+
+    if ref == 'refs/heads/main' and head_commit:
+        files_changed = head_commit.get('added') + head_commit.get('modified') + head_commit.get('removed')
+
+        # Verifica si hay cambios en el análisis de dependencias
+        if WORKFLOW_NAME in files_changed:
+            # Realiza la lógica para actualizar el informe y obtener el último JSON automáticamente
+            extract_path = download_and_update(REPO_NAME, WORKFLOW_NAME, GITHUB_ACCESS_TOKEN)
+            reportes = extract_latest_json(extract_path)
+
+            if reportes:
+                repository = FlaskVulnerabilityRepository()
+                obtener_vulnerabilidades = ObtenerVulnerabilidades(repository)
+                vulnerabilities = obtener_vulnerabilidades.execute(reportes)
+                return jsonify([vars(v) for v in vulnerabilities])
+
+    return jsonify({'status': 'success'})

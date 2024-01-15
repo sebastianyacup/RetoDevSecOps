@@ -39,7 +39,7 @@ jobs:
 
       - name: Snyk Analysis
         run: |
-          snyk test --json --debug > resultados_analisis_snyk_${{ github.run_id }}.json 2>&1
+          snyk test --json > resultados_analisis_snyk_${{ github.run_id }}.json
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_API_KEY }}
 
@@ -51,4 +51,10 @@ jobs:
         with:
           name: resultados-analisis-snyk
           path: resultados_analisis_snyk_${{ github.run_id }}.json
+
+      - name: Copy JSON to Public Directory
+        run: |
+          cp resultados_analisis_snyk_${{ github.run_id }}.json docs/
+
+
 
