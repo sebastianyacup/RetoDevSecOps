@@ -52,13 +52,19 @@ jobs:
           name: resultados-analisis-snyk
           path: resultados_analisis_snyk_${{ github.run_id }}.json
 
-
-      - name: Push Results to Another Repository
-        uses: ad-m/github-push-action@master
+      - name: Create Release
+        id: create_release
+        uses: softprops/action-gh-release@v1
         with:
-          repository: sebastianyacup/RetoDevSecOps/Docs
-          branch: main
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          files: |
+            resultados_analisis_snyk_${{ github.run_id }}.json
+          token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Get Release URL
+        id: get_release_url
+        run: echo "::set-output name=url::$(echo ${{ steps.create_release.outputs.release_url }})"
+      
+      - name: Display Release URL
+        run: echo "Release URL: ${{ steps.get_release_url.outputs.url }}"
 
 
