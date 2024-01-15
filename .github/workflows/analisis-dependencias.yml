@@ -28,23 +28,23 @@ jobs:
         run: |
           ls -R
 
-      - name: Install Synk
+      - name: Install Snyk
         run: |
-          npm install -g synk
-          synk --version  # Imprime la versión de Synk para verificar la instalación
+          npm install -g snyk
+          snyk --version  
 
       - name: Verificar Contenido de la Carpeta de Trabajo
         run: |
           ls -R
 
-      - name: Synk Analysis
-        run: synk analyze --json > resultados_analisis_synk_${{ github.run_id }}.json
+      - name: Snyk Analysis
+        run: snyk test --json > resultados_analisis_snyk_${{ github.run_id }}.json
 
-      - name: Show Synk Analysis Results
-        run: cat resultados_analisis_synk_${{ github.run_id }}.json
+      - name: Show Snyk Analysis Results
+        run: cat resultados_analisis_snyk_${{ github.run_id }}.json
 
-      - name: Upload Synk Results
+      - name: Upload Snyk Results
         uses: actions/upload-artifact@v2
         with:
-          name: resultados-analisis-synk
-          path: resultados_analisis_synk_${{ github.run_id }}.json
+          name: resultados-analisis-snyk
+          path: resultados_analisis_snyk_${{ github.run_id }}.json
