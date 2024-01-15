@@ -38,7 +38,10 @@ jobs:
           ls -R
 
       - name: Snyk Analysis
-        run: snyk test --json > resultados_analisis_snyk_${{ github.run_id }}.json
+        run: |
+          snyk test --json --debug > resultados_analisis_snyk_${{ github.run_id }}.json 2>&1
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_API_KEY }}
 
       - name: Show Snyk Analysis Results
         run: cat resultados_analisis_snyk_${{ github.run_id }}.json
@@ -48,3 +51,4 @@ jobs:
         with:
           name: resultados-analisis-snyk
           path: resultados_analisis_snyk_${{ github.run_id }}.json
+
