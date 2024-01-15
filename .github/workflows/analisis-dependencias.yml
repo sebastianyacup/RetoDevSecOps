@@ -52,10 +52,13 @@ jobs:
           name: resultados-analisis-snyk
           path: resultados_analisis_snyk_${{ github.run_id }}.json
 
-      - name: Copy JSON to Public Directory
-        run: |
-          mkdir -p docs 
-          cp resultados_analisis_snyk_${{ github.run_id }}.json docs/
+
+      - name: Push Results to Another Repository
+        uses: ad-m/github-push-action@master
+        with:
+          repository: sebastianyacup/RetoDevSecOps/Docs
+          branch: main
+          github_token: ${{ secrets.GITHUB_TOKEN }}
 
 
 
