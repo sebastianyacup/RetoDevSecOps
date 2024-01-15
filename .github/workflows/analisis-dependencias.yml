@@ -1,4 +1,4 @@
-name: CI/CD
+name: Analisis-Dependencias
 
 on:
   push:
@@ -28,14 +28,18 @@ jobs:
         run: |
           ls -R
 
+      - name: Install Synk
+        run: |
+          npm install -g synk
+        shell: bash
+
       - name: Synk Analysis
         run: |
           synk analyze --json > resultados_analisis_synk_${{ github.run_id }}.json
+        shell: bash
 
       - name: Upload Synk Results
         uses: actions/upload-artifact@v2
         with:
           name: resultados-analisis-synk
           path: resultados_analisis_synk_${{ github.run_id }}.json
-
-
