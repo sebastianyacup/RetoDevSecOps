@@ -4,4 +4,3 @@ Flask-SQLAlchemy
 requests
 pytest
 psycopg2-binary
-click==7.0
