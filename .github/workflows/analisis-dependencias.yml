@@ -31,7 +31,7 @@ jobs:
       - name: Install Snyk
         run: |
           npm install -g snyk
-          snyk --version  
+          snyk --version
 
       - name: Verificar Contenido de la Carpeta de Trabajo
         run: |
@@ -39,22 +39,34 @@ jobs:
 
       - name: Snyk Analysis
         run: |
-          snyk test --json > resultados_analisis_snyk_${{ github.run_id }}.json
+          # Determinar el nombre del archivo
+          filename="resultados_analisis_snyk.json"
+          count=1
+          while [ -e "$filename" ]; do
+            count=$((count+1))
+            filename="resultados_analisis_snyk_${count}.json"
+          done
+          # Ejecutar el análisis Snyk y guardar el resultado en el archivo
+          snyk test --json > "$filename"
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_API_KEY }}
 
       - name: Show Snyk Analysis Results
-        run: cat resultados_analisis_snyk_${{ github.run_id }}.json
+        run: cat resultados_analisis_snyk.json
 
-      - name: Upload Snyk Results
-        uses: actions/upload-artifact@v2
+      - name: Create Release
+        id: create_release
+        uses: softprops/action-gh-release@v1
         with:
-          name: resultados-analisis-snyk
-          path: resultados_analisis_snyk_${{ github.run_id }}.json
+          files: |
+            ${{ steps.create_release.outputs.filename }}
+          tag_name: v1.0.0
+          label: "Snyk Analysis JSON"
+          token: ${{ secrets.TOKEN_GIT }}
 
-      - name: Copy JSON to Public Directory
-        run: |
-          cp resultados_analisis_snyk_${{ github.run_id }}.json docs/
+      - name: Get Release URL
+        id: get_release_url
+        run: echo "::set-output name=url::${{ steps.create_release.outputs.upload_url }}"
 
-
-
+      - name: Display Release URL
+        run: echo "${{ steps.get_release_url.outputs.url }}"

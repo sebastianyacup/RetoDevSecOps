@@ -1,29 +1,20 @@
+import socket
+
 from app import app
-from app.adapters.flask_repository import FlaskVulnerabilityRepository
-from app.core.use_cases.obtener_vulnerabilidades import ObtenerVulnerabilidades
-from scripts.download_and_update import download_and_update
-from scripts.extract_latest_json import extract_latest_json
-from app.adapters.flask_routes import bp
+from app.adapters.vulnerabilities_adapter import take_latest_json, run_analysis
+from app.core.interfaces.home_interface import render_main_page
 
-def run_analysis():
-    REPO_NAME = 'sebastianyacup/RetoDevSecOps'
-    WORKFLOW_NAME = 'analisis-dependencias.yml'
-    GITHUB_ACCESS_TOKEN = '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'
+ip_address = socket.gethostbyname(socket.gethostname())
 
-    extract_path = download_and_update(REPO_NAME, WORKFLOW_NAME)
+@app.route('/')
+def home():
+    return render_main_page()
 
-    if extract_path:
-        reportes = extract_latest_json(extract_path)
-
-        repository = FlaskVulnerabilityRepository()
-        obtener_vulnerabilidades_instance = ObtenerVulnerabilidades(repository=repository)
-
-        obtener_vulnerabilidades_instance.execute(reportes)
-
-        app.register_blueprint(bp)
-
-        if __name__ == '__main__':
-            app.run(host='0.0.0.0', port=5000)
+@app.route('/vulnerabilidades')
+def vulnerabilities_route():
+    return take_latest_json()
 
 if __name__ == '__main__':
     run_analysis()
+    app.run(host='0.0.0.0')
+    print(f"La aplicación se está ejecutando en http://{ip_address}:5000/")
