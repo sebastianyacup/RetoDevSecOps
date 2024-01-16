@@ -27,11 +27,14 @@ jobs:
       - name: Install Snyk
         run: |
           npm install -g snyk
-          snyk --version  
+
+      - name: Show snyk version
+        run: snyk --version
 
       - name: Snyk Analysis
         run: |
           snyk test --json > resultados_analisis_snyk.json
+              echo "Snyk Test Completed"
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_API_KEY }}
 
