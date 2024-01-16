@@ -24,34 +24,26 @@ jobs:
         run: |
           pip install -r requirements.txt
 
-      - name: Check Project Files
-        run: |
-          ls -R
-
       - name: Install Snyk
         run: |
           npm install -g snyk
           snyk --version  
 
-      - name: Verificar Contenido de la Carpeta de Trabajo
-        run: |
-          ls -R
-
       - name: Snyk Analysis
         run: |
-          snyk test --json > resultados_analisis_snyk_${{ github.run_id }}.json
+          snyk test --json > resultados_analisis_snyk.json
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_API_KEY }}
 
       - name: Show Snyk Analysis Results
-        run: cat resultados_analisis_snyk_${{ github.run_id }}.json
+        run: cat resultados_analisis_snyk.json
 
       - name: Create Release
         id: create_release
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            resultados_analisis_snyk_${{ github.run_id }}.json
+            resultados_analisis_snyk.json
           tag_name: v1.0.0  
           label: "Snyk Analysis JSON"
           token: ${{ secrets.TOKEN_GIT }}
@@ -62,11 +54,3 @@ jobs:
 
       - name: Display Release URL
         run: echo "${{ steps.get_release_url.outputs.url }}"
-
-
-
-
-
-
-
-
