@@ -23,23 +23,32 @@ jobs:
       - name: Install Dependencies
         run: |
           pip install -r requirements.txt
+          
+      - name: Check Project Files
+        run: |
+          ls -R
 
       - name: Install Snyk
         run: |
           npm install -g snyk
+          snyk --version  
 
-      - name: Show snyk version
-        run: snyk --version
+      - name: Verificar Contenido de la Carpeta de Trabajo
+        run: |
+          ls -R
 
       - name: Snyk Analysis
         run: |
           snyk test --json > resultados_analisis_snyk.json
-              echo "Snyk Test Completed"
+          ANALYSIS_RESULT=$?
+          if [ $ANALYSIS_RESULT -ne 0 ]; then
+            echo "Snyk Test Failed"
+            cat resultados_analisis_snyk.json
+            exit $ANALYSIS_RESULT
+          fi
+          echo "Snyk Test Completed"
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_API_KEY }}
-
-      - name: Show Snyk Analysis Results
-        run: cat resultados_analisis_snyk.json
 
       - name: Create Release
         id: create_release
@@ -57,3 +66,4 @@ jobs:
 
       - name: Display Release URL
         run: echo "${{ steps.get_release_url.outputs.url }}"
+
