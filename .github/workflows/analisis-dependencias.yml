@@ -30,6 +30,8 @@ jobs:
         run: |
           npm install -g snyk
           snyk --version
+
+
       - name: Verificar Contenido de la Carpeta de Trabajo
         run: |
           ls -R
@@ -58,6 +60,9 @@ jobs:
         env:
           pythonLocation: /opt/hostedtoolcache/Python/3.12.1/x64
           LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.1/x64/lib
+
+      - name: Display Release URL
+        run: echo "Release URL:${{ steps.create_release.outputs.url }}"
 
       - name: Display Release URL
         run: echo "Release URL:${{ steps.create_release.outputs.url }}"
