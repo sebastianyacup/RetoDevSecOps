@@ -5,6 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Información de Vulnerabilidades</title>
+    <!-- Agregamos el enlace al archivo CSS de Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
@@ -113,14 +114,11 @@
                 <p>No se encontraron vulnerabilidades conocidas.</p>
             {% endif %}
         </section>
-
-        {% if reportes %}
-            <a class="btn btn-primary me-3" href="#" role="button">Descargar Informe</a>
-            <a class="btn download-btn" href="data:text/json;charset=utf-8,{{ reportes|tojson }}" download="informe_vulnerabilidades.json" role="button">Descargar JSON</a>
-        {% endif %}
+     {% if reportes %}
+    <a class="btn btn-primary me-3" href="#" role="button">Descargar Informe</a>
+    <a class="btn download-btn" href="{{ url_for('take_latest_json') }}" download="informe_vulnerabilidades.json" role="button">Descargar JSON</a>
+     {% endif %}
     </div>
-
-    <!-- Agregamos el enlace al archivo JS de Bootstrap (opcional, pero necesario para algunas funcionalidades) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
