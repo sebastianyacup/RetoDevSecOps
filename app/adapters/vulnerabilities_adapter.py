@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import render_template
 
 from scripts.json_processor import JsonProcessor
 from scripts.extract_latest import get_latest_json_url

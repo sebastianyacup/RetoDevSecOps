@@ -2,8 +2,6 @@ import json
 from app import app, db
 from app.core.use_cases.vulnerability import Vulnerability
 
-
-
 def save_to_database(json_file_path):
     with app.app_context():
         with open(json_file_path, 'r') as json_file:

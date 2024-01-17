@@ -1,8 +1,7 @@
 import json
 import os
-import time
-
 import requests
+
 from app.infrastructure.persistence.database import save_to_database
 
 
