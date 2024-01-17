@@ -23,19 +23,29 @@ jobs:
       - name: Install Dependencies
         run: |
           pip install -r requirements.txt
+
       - name: Check Project Files
         run: |
           ls -R
+
       - name: Install Snyk
         run: |
           npm install -g snyk
-          snyk --version  
+          snyk --version
+
       - name: Verificar Contenido de la Carpeta de Trabajo
         run: |
           ls -R
+
       - name: Snyk Analysis
         run: |
-          snyk test --json > resultados_analisis_snyk.json
+          filename="resultados_analisis_snyk.json"
+          count=1
+          while [ -e "$filename" ]; do
+            count=$((count+1))
+            filename="resultados_analisis_snyk_${count}.json"
+          done
+          snyk test --json > "$filename"
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_API_KEY }}
 
@@ -47,8 +57,8 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            resultados_analisis_snyk.json
-          tag_name: v1.0.0  
+            ${{ steps.create_release.outputs.filename }}
+          tag_name: v1.0.0
           label: "Snyk Analysis JSON"
           token: ${{ secrets.TOKEN_GIT }}
 
