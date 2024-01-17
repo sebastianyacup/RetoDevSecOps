@@ -23,30 +23,24 @@ jobs:
       - name: Install Dependencies
         run: |
           pip install -r requirements.txt
-
       - name: Check Project Files
         run: |
           ls -R
-
       - name: Install Snyk
         run: |
           npm install -g snyk
           snyk --version
-
       - name: Verificar Contenido de la Carpeta de Trabajo
         run: |
           ls -R
-
       - name: Snyk Analysis
         run: |
-          # Determinar el nombre del archivo
           filename="resultados_analisis_snyk.json"
           count=1
           while [ -e "$filename" ]; do
             count=$((count+1))
             filename="resultados_analisis_snyk_${count}.json"
           done
-          # Ejecutar el análisis Snyk y guardar el resultado en el archivo
           snyk test --json > "$filename"
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_API_KEY }}
@@ -58,15 +52,12 @@ jobs:
         id: create_release
         uses: softprops/action-gh-release@v1
         with:
-          files: |
-            ${{ steps.create_release.outputs.filename }}
+          files: resultados_analisis_snyk*.json
           tag_name: v1.0.0
-          label: "Snyk Analysis JSON"
           token: ${{ secrets.TOKEN_GIT }}
-
-      - name: Get Release URL
-        id: get_release_url
-        run: echo "::set-output name=url::${{ steps.create_release.outputs.upload_url }}"
+        env:
+          pythonLocation: /opt/hostedtoolcache/Python/3.12.1/x64
+          LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.1/x64/lib
 
       - name: Display Release URL
-        run: echo "${{ steps.get_release_url.outputs.url }}"
+        run: echo "Release URL:${{ steps.create_release.outputs.url }}"
