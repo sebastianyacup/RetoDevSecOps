@@ -56,16 +56,13 @@ jobs:
         id: create_release
         uses: softprops/action-gh-release@v1
         with:
-          files: |
-            ${{ steps.create_release.outputs.filename }}
+          files: resultados_analisis_snyk*.json
           tag_name: v1.0.0
-          label: "Snyk Analysis JSON"
           token: ${{ secrets.TOKEN_GIT }}
-
-      - name: Get Release URL
-        id: get_release_url
-        run: echo "::set-output name=url::${{ steps.create_release.outputs.upload_url }}"
+        env:
+          pythonLocation: /opt/hostedtoolcache/Python/3.12.1/x64
+          LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.1/x64/lib
 
       - name: Display Release URL
-        run: echo "${{ steps.get_release_url.outputs.url }}"
+        run: echo "Release URL:${{ steps.create_release.outputs.url }}"
 
