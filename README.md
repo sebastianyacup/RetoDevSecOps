@@ -18,4 +18,4 @@ La aplicación se ejecutará y te proporcionará la dirección IP en la línea d
 
 También puedes revisar las tareas ejecutadas en el archivo `main.yml` para SonarQube, que se dispara automáticamente al enviar un PR (ver [aquí](https://github.com/sebastianyacup/RetoDevSecOps/actions/workflows/main.yml)), y el análisis de dependencias (ver [aquí](https://github.com/sebastianyacup/RetoDevSecOps/actions/workflows/analisis-dependencias.yml)).
 
-**NOTA:** Al clonar el repositorio, asegúrate de estar en la rama `main`.
+**NOTA:** Al clonar el repositorio, asegúrate de estar en la rama `main`. .
