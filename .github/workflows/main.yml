@@ -59,6 +59,19 @@ jobs:
 
       - name: SonarQube Scan
         uses: sonarsource/sonarqube-scan-action@master
+        with:
+             sonar-project-exclusions: >-
+               **/.github/**,
+               **/app/adapters/**,
+               **/app/core/**,
+               **/app/interfaces/**,
+               **/app/use_cases/**,
+               **/app/infrastructure/**,
+               **/app/templates/**,
+               **/docs/**,
+               **/scripts/BD/**,
+               **/config.py,
+               **/run.py
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}

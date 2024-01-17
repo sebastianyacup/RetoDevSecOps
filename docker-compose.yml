@@ -12,11 +12,13 @@ services:
       - "5432:5432"
     networks:
       - mynetwork
+    volumes:
+      - ./scripts/BD/init.sql:/docker-entrypoint-initdb.d/init.sql
 
   runningapp:
     container_name: runningapp
     build: .
-    command: ["python", "run.py"]
+    command:  ["bash", "-c", "sleep 8 && python run.py && tail -f /dev/null"]
     ports:
       - "5000:5000"
     depends_on:
